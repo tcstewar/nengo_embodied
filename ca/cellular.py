@@ -46,7 +46,7 @@ def make_body(map, whisker_count=3, whisker_range=0.5, whisker_max=4,
             for cell in row:
                 if cell.possible_target:
                     targets.append(cell)
-        net.target = None
+        net.current_target = None
         if len(targets) > 0:
             net.current_target = np.random.choice(targets)
             net.current_target.target = True
@@ -59,8 +59,8 @@ def make_body(map, whisker_count=3, whisker_range=0.5, whisker_max=4,
 
         def move(t, x):
             speed, rotation = x
-            net.body.turn(rotation * movement_dt)
-            net.body.go_forward(speed * movement_dt)
+            net.body.turn(rotation * movement_dt * 40)
+            net.body.go_forward(speed * movement_dt * 100)
             if t < net.last_time:
                 start = np.random.choice(starts)
                 net.body.x = start.x
@@ -102,7 +102,7 @@ def make_body(map, whisker_count=3, whisker_range=0.5, whisker_max=4,
         score = nengo.Node(score_func, label='score')
 
         def target_dir_func(t):
-            if net.target is None:
+            if net.current_target is None:
                 return 0, 0
             dx = net.body.x - net.current_target.x
             dy = net.body.y - net.current_target.y
